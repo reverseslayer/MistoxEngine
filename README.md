@@ -2,5 +2,3 @@ This project is under development as is extremely early in its development stage
 
 Creator : Derek Holloway
 Copyright : Mistox 2017
-
-a
