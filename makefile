@@ -1,33 +1,29 @@
-CFLAGS=-m32
+CSOURCES=$(shell find src -type f -name "*.c")
+ASOURCES=$(shell find src/assembly -type f -name "*.asm")
+HSOURCES=$(shell find src/include -type f -name "*.h")
 
-C_SOURCES = $(wildcard kernel/*.c drivers/*.c)
-HEADERS = $(wildcard kernel/*.h drivers/*.h)
+COBJ=$(patsubst %.c,%.o,$(CSOURCES))
+AOBJ=$(patsubst %.asm,%.o,$(ASOURCES))
 
-OBJ = ${C_SOURCES:.c=.o}
+Clear: MistoxOs.iso
+	rm -f *.bin
+	rm -r iso
+	rm -f src/*.o
+	rm -f src/assembly/*.o
 
-all: os-image
+MistoxOs.iso: Mistox.bin
+	rm -f *.iso
+	mkdir -p iso/boot/grub
+	cp Mistox.bin iso/boot/Mistox.bin
+	cp grub/menu.lst iso/boot/grub/menu.lst
+	cp grub/stage2_eltorito iso/boot/grub/stage2_eltorito
+	genisoimage -R -b boot/grub/stage2_eltorito -no-emul-boot -boot-load-size 4 -boot-info-table -o MistoxOs.iso iso
 
-run: all
-		qemu-system-i386 -fda os-image
+Mistox.bin: $(CSOURCES) $(ASOURCES) $(COBJ) $(AOBJ)
+	i686-elf-gcc -T src/assembly/linker.ld $(AOBJ) $(COBJ) -o Mistox.bin -ffreestanding -O2 -nostdlib $(SOURCES) -lgcc
 
-os-image: boot/boot_sect.bin kernel.bin
-		cat $^ > os-image
-
-kernel.bin: kernel/kernel_entry.o ${OBJ}
-		ld -o $@ -melf_i386 -Ttext 0x1000 $^ --oformat binary
-
-%.o: %.c ${HEADERS}
-		gcc ${CFLAGS} -ffreestanding -c $< -o $@
+%.o: %.c
+	i686-elf-gcc -c $< -o $@ -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 
 %.o: %.asm
-		nasm $< -f elf32 -o $@
-
-boot/boot_sect.bin: boot/boot_sect.asm
-		nasm $< -f bin -o $@
-
-%.bin: %.o
-		nasm $< -f bin -o $@
-
-clean:
-		rm -fr *.bin *.dis *.o os-image
-		rm -fr kernel/*.o boot/*.bin drivers/*.o
+	nasm -felf32 -o $@ $<
