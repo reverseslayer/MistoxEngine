@@ -1,4 +1,6 @@
 #include "include/multiboot.h"
+#include "include/descTables.h"
+#include "include/asmFuncts.h"
 
 // Drivers
 
@@ -8,8 +10,8 @@ int kernel_main( struct multiboot* mboot ) {
 	
 	//clearScreen();
 
-	//initDescriptorTables();
-	//__asm__ __volatile__("sti");
+	initDescTbls();			// Setup Interrupts
+	__asm__ __volatile__("sti");	// Set Interrupt Flag
 
 	//initTimer(50);
 	//initKeyboard();

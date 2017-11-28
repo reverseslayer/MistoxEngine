@@ -9,5 +9,13 @@ Build Instructions :
   2.Follow Linux Instructions Here (https://github.com/lordmilko/i686-elf-tools)
   3.Install Make
   4.Use Make
-  5.Run System/Kernel/MakeIso.sh
-  6.The Iso Is Built
+
+
+Fixes:
+	asmFuncts
+
+Progress:
+
+	11/27/2017 :
+		Setup X86_64 Achitecture
+	

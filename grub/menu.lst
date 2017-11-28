@@ -5,4 +5,4 @@ default 0
 #chainloader (hd0)+1
  
 title Mistox Os
-kernel /BOOT/MISTOX.BIN
+kernel /boot/Mistox.bin
